@@ -1,0 +1,47 @@
+Create me a python code that generates a fractal in response to a name given by the user. The fractal should be unique for each name given. The type of fractal can be the same for all names or different for different names. The code will be run in jupyter hub.
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def name_to_complex(name):
+    """ Convert a name to a complex number based on ASCII values. """
+    real_part = sum(ord(char) for char in name) % 10 - 5  # to range [-5, 5]
+    imag_part = sum(ord(char) for char in name[::-1]) % 10 - 5  # to range [-5, 5]
+    return complex(real_part / 2, imag_part / 2)  # scale down for better visualization
+
+def julia(c, max_iter, width, height, xlim, ylim):
+    x = np.linspace(xlim[0], xlim[1], width)
+    y = np.linspace(ylim[0], ylim[1], height)
+    z = np.array(np.meshgrid(x, y)).T.reshape(-1, 2)
+    img = np.zeros(z.shape[0], dtype=int)
+    
+    # Initialize z as complex numbers
+    z = z[:, 0] + z[:, 1] * 1j
+    
+    for i in range(max_iter):
+        mask = np.abs(z) < 2
+        img[mask] = i
+        z[mask] = z[mask] ** 2 + c
+
+    return img.reshape((height, width))
+
+def plot_julia(c, max_iter=100):
+    width, height = 800, 800
+    xlim = (-1.5, 1.5)
+    ylim = (-1.5, 1.5)
+    
+    img = julia(c, max_iter, width, height, xlim, ylim)
+    plt.imshow(img, extent=(xlim[0], xlim[1], ylim[0], ylim[1]), cmap='hot')
+    plt.colorbar()
+    plt.title(f"Julia Set for c = {c:.2f}")
+    plt.show()
+
+# Get user input for the first name
+first_name = input("Enter your first name: ")
+c = name_to_complex(first_name)  # Convert name to complex number
+max_iter = 100 + len(first_name) * 5  # Change max_iter based on name length
+
+# Generate the fractal with user input
+plot_julia(c, max_iter=max_iter)
+
+Using the AI assistant, I realized that repeating and altering the prompt allowed the AI to grow on its response. I also found it was better to include older parts of the inital prompt instead of expecting the AI to remember past prompts.
